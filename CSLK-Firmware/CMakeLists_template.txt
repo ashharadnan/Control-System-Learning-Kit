@@ -49,9 +49,7 @@ else ()
 endif ()
 
 include_directories(${includes})
-include_directories(Drivers/CMSIS/DSP/Include)
-include_directories(Drivers/CMSIS/DSP/PrivateInclude)
-include_directories(Drivers/HX711)
+include_directories(Drivers/HX711 Drivers/CMSIS/DSP/Include Drivers/CMSIS/DSP/PrivateInclude)
 
 add_definitions(${defines})
 

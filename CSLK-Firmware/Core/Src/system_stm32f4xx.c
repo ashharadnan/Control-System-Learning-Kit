@@ -71,7 +71,7 @@
   * @{
   */
 
-/************************* Miscellaneous Config ************************/
+/************************* Miscellaneous Configuration ************************/
 /*!< Uncomment the following line if you need to use external SRAM or SDRAM as data memory  */
 #if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx)\
  || defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)\
@@ -361,7 +361,7 @@ void SystemInit_ExtMemCtl(void)
   /* No pull-up, pull-down for PIx pins */ 
   GPIOI->PUPDR   = 0x00000000;
   
-/*-- FMC Config -------------------------------------------------------*/
+/*-- FMC Configuration -------------------------------------------------------*/
   /* Enable the FMC interface clock */
   RCC->AHB3ENR |= 0x00000001;
   /* Delay after an RCC peripheral clock enabling */
@@ -564,7 +564,7 @@ void SystemInit_ExtMemCtl(void)
   GPIOI->PUPDR   = 0x00000000;
 #endif /* STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx || STM32F469xx || STM32F479xx */
   
-/*-- FMC Config -------------------------------------------------------*/
+/*-- FMC Configuration -------------------------------------------------------*/
   /* Enable the FMC interface clock */
   RCC->AHB3ENR |= 0x00000001;
   /* Delay after an RCC peripheral clock enabling */
@@ -644,7 +644,7 @@ void SystemInit_ExtMemCtl(void)
  || defined(STM32F469xx) || defined(STM32F479xx) || defined(STM32F412Zx) || defined(STM32F412Vx)
 
 #if defined(DATA_IN_ExtSRAM)
-/*-- GPIOs Config -----------------------------------------------------*/
+/*-- GPIOs Configuration -----------------------------------------------------*/
    /* Enable GPIOD, GPIOE, GPIOF and GPIOG interface clock */
   RCC->AHB1ENR   |= 0x00000078;
   /* Delay after an RCC peripheral clock enabling */
@@ -698,7 +698,7 @@ void SystemInit_ExtMemCtl(void)
   /* No pull-up, pull-down for PGx pins */ 
   GPIOG->PUPDR   = 0x00000000;
   
-/*-- FMC/FSMC Config --------------------------------------------------*/
+/*-- FMC/FSMC Configuration --------------------------------------------------*/
   /* Enable the FMC/FSMC interface clock */
   RCC->AHB3ENR         |= 0x00000001;
 

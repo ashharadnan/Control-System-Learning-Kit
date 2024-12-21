@@ -50,9 +50,7 @@ else ()
 endif ()
 
 include_directories(USB_DEVICE/App USB_DEVICE/Target Core/Inc Drivers/STM32F4xx_HAL_Driver/Inc Drivers/STM32F4xx_HAL_Driver/Inc/Legacy Middlewares/ST/STM32_USB_Device_Library/Core/Inc Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc Drivers/CMSIS/Device/ST/STM32F4xx/Include Drivers/CMSIS/Include)
-include_directories(Drivers/CMSIS/DSP/Include)
-include_directories(Drivers/CMSIS/DSP/PrivateInclude)
-include_directories(Drivers/HX711)
+include_directories(Drivers/HX711 Drivers/CMSIS/DSP/Include Drivers/CMSIS/DSP/PrivateInclude)
 
 add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32F401xC)
 
