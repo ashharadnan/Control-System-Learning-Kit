@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,10 +35,15 @@
 char RXbuffer[1024];
 char TXbuffer[1024];
 
-conf Config = {2999, 9999, CHANNEL_A, 1, 0};
+conf Config = {2999, 9999, CHANNEL_A};
 bool DebugMode = true;
 
 hx711_t loadcell1;
+
+process PVs;
+
+arm_pid_instance_f32 PID;
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,6 +53,8 @@ hx711_t loadcell1;
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
 
@@ -57,6 +64,8 @@ TIM_HandleTypeDef htim1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -97,6 +106,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_USB_DEVICE_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   //Loadcell initialisation
     hx711_init(&loadcell1, HX_Clk_GPIO_Port, HX_Clk_Pin, HX_Data_GPIO_Port, HX_Data_Pin);
@@ -104,13 +115,193 @@ int main(void)
     set_scales(&loadcell1, 1, 1);
     tare_all(&loadcell1, 10);
 
+    HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(ENA_GPIO_Port, ENA_Pin, GPIO_PIN_SET);
+
+    PID.Kp = 1;
+    PID.Ki = 0;
+    PID.Kd = 0;
+    arm_pid_init_f32(&PID, 1);
+
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim3);
+    HAL_TIM_Base_Start_IT(&htim4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  float32_t val;
   while (1)
   {
+      if (RXbuffer[0] != 0x00){
+          char *loc;
+          char *oper;
+
+          loc = strstr(RXbuffer, "HELP");
+          if (loc != NULL){
+              strncpy(TXbuffer,
+                      "SP d.f\t\t:\tSet the setpoint to d.f\r\n"
+                      "DEBUG {0,1}\t:\tSet debug mode\r\n"
+                      "THE FOLLOWING WILL ONLY WORK IN DEBUG MODE!\r\n"
+                      "\t\t--PWM--\r\n"
+                      "PWM d\t\t:\tSet PWM CCR to d\r\n"
+                      "PWM% d.f\t:\tSet PWM as a percentage d.f%\r\n"
+                      "PWMMIN d\t:\tSet the minimum saturation range for PWM to d\r\n"
+                      "PWMMAX d\t:\tSet the maximum saturation range for PWM to d\r\n"
+                      "\t\t--LoadCell--\r\n"
+                      "TARE\t\t:\tTare the loadcell weight\r\n"
+                      "CHANNEL {0,1}\t:\tChange between channel CHA and CHB\r\n"
+                      "CHGAIN {0,1}\t:\tChange between low and high channel (CHA) gain\r\n"
+                      "SCALE d.f\t:\tSet the scale of the current channel to d.f\r\n"
+                      "MEASURE\t:\tGet the current value\r\n"
+                      "\t\t--Control--\r\n"
+                      "KP d.f\t\t:\tSet the Proportional Gain to d.f\r\n"
+                      "KI d.f\t\t:\tSet the Proportional Gain to d.f\r\n",
+                      1024);
+              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+              memset(RXbuffer, 0x00, 1024);
+          }
+
+          loc = strstr(RXbuffer, "SP ");
+          if (loc != NULL){
+              oper = loc + 3;
+              PVs.setpoint = atof(oper);
+              snprintf(TXbuffer, 1024, "Setpoint: %.4f\r\n", PVs.setpoint);
+              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+              memset(RXbuffer, 0x00, 1024);
+          }
+
+          loc = strstr(RXbuffer, "DEBUG ");
+          if (loc != NULL){
+              oper = loc + 6;
+              DebugMode = (bool)atoi(oper);
+              snprintf(TXbuffer, 1024, "Debug Mode: %s\r\n", DebugMode ? "on" : "off");
+              if (!DebugMode) arm_pid_reset_f32(&PID);
+              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+              memset(RXbuffer, 0x00, 1024);
+          }
+
+          if (DebugMode){
+              loc = strstr(RXbuffer, "PWM ");
+              if (loc != NULL){
+                  oper = loc + 4;
+                  uint16_t pwm;
+                  pwm = atoi(oper);
+                  snprintf(TXbuffer, 1024, "Setting PWM to: %d saturated to (%d, %d)\r\n", pwm, Config.PWM_MIN, Config.PWM_MAX);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  Set_PWM(pwm);
+              }
+              loc = strstr(RXbuffer, "PWM% ");
+              if (loc != NULL){
+                  oper = loc + 5;
+                  float32_t pwm;
+                  pwm = atof(oper);
+                  snprintf(TXbuffer, 1024, "Setting PWM to: %.2f %%\r\n", pwm);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  Set_PWM_percent(pwm);
+              }
+              loc = strstr(RXbuffer, "PWMMIN ");
+              if (loc != NULL) {
+                  oper = loc + 7;
+                  uint16_t minpwm;
+                  minpwm = atoi(oper);
+                  snprintf(TXbuffer, 1024, "Setting PWM Minimum to: %d\r\n", minpwm);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  Config.PWM_MIN = minpwm;
+                  if (TIM1->CCR1 > minpwm){
+                      Set_PWM(minpwm);
+                  }
+              }
+              loc = strstr(RXbuffer, "PWMMAX ");
+              if (loc != NULL) {
+                  oper = loc + 7;
+                  uint16_t maxpwm;
+                  maxpwm = atoi(oper);
+                  snprintf(TXbuffer, 1024, "Setting PWM Maximum to: %d\r\n", maxpwm);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  Config.PWM_MAX = maxpwm;
+                  if (TIM1->CCR1 > maxpwm){
+                      Set_PWM(maxpwm);
+                  }
+              }
+              loc = strstr(RXbuffer, "TARE");
+              if (loc != NULL) {
+                  snprintf(TXbuffer, 1024, "Tare both channels\r\n");
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  tare_all(&loadcell1, 10);
+              }
+              loc = strstr(RXbuffer, "CHANNEL ");
+              if (loc != NULL) {
+                  oper = loc + 8;
+                  bool ch = atoi(oper);
+                  snprintf(TXbuffer, 1024, "Switched to CH%s\r\n", ch ? "B": "A");
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  Config.HX_CH = ch;
+              }
+              loc = strstr(RXbuffer, "CHGAIN ");
+              if (loc != NULL) {
+                  oper = loc + 7;
+                  bool gain = atoi(oper);
+                  snprintf(TXbuffer, 1024, "CHA gain set to %s\r\n", gain ? "low": "high");
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  if (gain){
+                      set_gain(&loadcell1, 128, 32);
+                  }
+                  else{
+                      set_gain(&loadcell1, 64, 32);
+                  }
+              }
+              loc = strstr(RXbuffer, "SCALE ");
+              if (loc != NULL) {
+                  oper = loc + 6;
+                  float32_t scale = atof(oper);
+                  snprintf(TXbuffer, 1024, "Scale set to %.4f\r\n", Config.HX_CH ? "B": "A", scale);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+                  set_scales(&loadcell1, scale, scale);
+              }
+              loc = strstr(RXbuffer, "MEASURE");
+              if (loc != NULL) {
+                  float32_t meas;
+                  meas = get_weight(&loadcell1, 10, Config.HX_CH);
+                  snprintf(TXbuffer, 1024, "Measured: %.4f\r\n", meas);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+              }
+              loc = strstr(RXbuffer, "KP ");
+              if (loc != NULL) {
+                  oper = loc + 3;
+                  PID.Kp = atof(oper);
+                  arm_pid_init_f32(&PID, 1);
+                  snprintf(TXbuffer, 1024, "Kp changed to: %.4f\r\n", PID.Kp);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+              }
+              loc = strstr(RXbuffer, "KI ");
+              if (loc != NULL) {
+                  oper = loc + 3;
+                  PID.Ki = atof(oper);
+                  arm_pid_init_f32(&PID, 1);
+                  snprintf(TXbuffer, 1024, "Ki changed to: %.4f\r\n", PID.Ki);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+              }
+          }
+
+      }
+
+      if (!DebugMode){
+          PVs.height = get_weight(&loadcell1, 10, Config.HX_CH);
+      }
+
+      HAL_Delay(0);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -239,6 +430,96 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 1000;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 24999;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 49999;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -250,14 +531,22 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, HX_Clk_Pin|IN2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(ENA_GPIO_Port, ENA_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, HX_Clk_Pin|IN2_Pin|ENA_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : HX_Data_Pin */
   GPIO_InitStruct.Pin = HX_Data_Pin;
@@ -272,19 +561,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(HX_Clk_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : IN2_Pin */
-  GPIO_InitStruct.Pin = IN2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(IN2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : ENA_Pin */
-  GPIO_InitStruct.Pin = ENA_Pin;
+  /*Configure GPIO pins : IN2_Pin ENA_Pin */
+  GPIO_InitStruct.Pin = IN2_Pin|ENA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(ENA_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

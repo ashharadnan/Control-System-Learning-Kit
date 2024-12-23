@@ -33,7 +33,7 @@ void hx711_init(hx711_t *hx711, GPIO_TypeDef *clk_gpio, uint16_t clk_pin, GPIO_T
 void set_scale(hx711_t *hx711, uint8_t channel, float scale){
     // Set the scale. To calibrate the cell, run the program with a scale of 1, call the tare function and then the get_units function.
     // Divide the obtained weight by the real weight. The result is the parameter to pass to scale
-    if (channel){
+    if (!channel){
         hx711->Ascale = scale;
     }
     else{
@@ -71,16 +71,17 @@ void set_offset(hx711_t *hx711, long offset, uint8_t channel){
 
 //############################################################################################
 uint8_t shiftIn(hx711_t *hx711, uint8_t bitOrder) {
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     uint8_t value = 0;
     uint8_t i;
 
     for(i = 0; i < 8; ++i) {
-    	HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, SET);
+    	HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, GPIO_PIN_SET);
         if(bitOrder == 0)
             value |= HAL_GPIO_ReadPin(hx711->dat_gpio, hx711->dat_pin) << i;
         else
             value |= HAL_GPIO_ReadPin(hx711->dat_gpio, hx711->dat_pin) << (7 - i);
-        HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, RESET);
+        HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, GPIO_PIN_RESET);
     }
     return value;
 }
@@ -119,8 +120,8 @@ long read(hx711_t *hx711, uint8_t channel){
 	else gain = hx711->Bgain;
 
 	for (unsigned int i = 0; i < gain; i++) {
-		HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, SET);
-		HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, RESET);
+		HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(hx711->clk_gpio, hx711->clk_pin, GPIO_PIN_RESET);
 	}
 
 	interrupts();

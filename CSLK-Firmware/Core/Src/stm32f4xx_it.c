@@ -40,7 +40,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+extern hx711_t loadcell1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -60,6 +60,8 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim4;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -203,6 +205,43 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+  if (!DebugMode){
+      snprintf(TXbuffer, 1024, "Height: %.4f\tPWM: %.2f\tSetpoint: %.4f\tError: %.4f\r\n", PVs.height, PVs.pv, PVs.setpoint, PVs.error);
+      CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+  }
+  /* USER CODE END TIM3_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+  if(!DebugMode){
+      PVs.error = PVs.setpoint - PVs.height;
+      PVs.pv = arm_pid_f32(&PID, PVs.error);
+      if (PVs.pv > 100) PVs.pv = 100;
+      else if (PVs.pv < 0) PVs.pv = 0;
+      Set_PWM_percent(PVs.pv);
+  }
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
   * @brief This function handles USB On The Go FS global interrupt.
   */
 void OTG_FS_IRQHandler(void)
@@ -212,147 +251,7 @@ void OTG_FS_IRQHandler(void)
   HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
   /* USER CODE BEGIN OTG_FS_IRQn 1 */
 
-  if (RXbuffer[0] != 0x00){
-      char *loc;
-      char *oper;
 
-      loc = strstr(RXbuffer, "HELP");
-      if (loc != NULL){
-          strncpy(TXbuffer,
-                  "DEBUG {0,1}\t:\tSet debug mode\r\n"
-                  "\t\t--PWM--\r\n"
-                  "PWM d\t\t:\tSet PWM CCR to d\r\n"
-                  "PWM% d.f\t:\tSet PWM as a percentage d.f%\r\n"
-                  "PWMMIN d\t:\tSet the minimum saturation range for PWM to d\r\n"
-                  "PWMMAX d\t:\tSet the maximum saturation range for PWM to d\r\n"
-                  "\t\t--LoadCell--\r\n"
-                  "TARE\t\t:\tTare the loadcell weight\r\n"
-                  "CHANNEL {0,1}\t:\tChange between channel CHA and CHB\r\n"
-                  "CHGAIN {0,1}\t:\tChange between low and high channel (CHA) gain\r\n"
-                  "SCALE d.f\t:\tSet the scale of the current channel to d.f\r\n"
-                  "MEASURE\t:\tGet the current value\r\n",
-                  1024);
-          CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-          memset(RXbuffer, 0x00, 1024);
-          return;
-      }
-
-      loc = strstr(RXbuffer, "DEBUG ");
-      if (loc != NULL){
-          oper = loc + 6;
-          DebugMode = (bool)atoi(oper);
-          snprintf(TXbuffer, 1024, "Debug Mode: %s\r\n", DebugMode ? "on" : "off");
-          CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-          memset(RXbuffer, 0x00, 1024);
-          return;
-      }
-
-      if (DebugMode){
-          loc = strstr(RXbuffer, "PWM ");
-          if (loc != NULL){
-              oper = loc + 4;
-              uint16_t pwm;
-              pwm = atoi(oper);
-              snprintf(TXbuffer, 1024, "Setting PWM to: %d saturated to (%d, %d)\r\n", pwm, Config.PWM_MIN, Config.PWM_MAX);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              Set_PWM(pwm);
-              return;
-          }
-          loc = strstr(RXbuffer, "PWM% ");
-          if (loc != NULL){
-              oper = loc + 5;
-              float32_t pwm;
-              pwm = atof(oper);
-              snprintf(TXbuffer, 1024, "Setting PWM to: %.2f %%\r\n", pwm);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              Set_PWM_percent(pwm);
-              return;
-          }
-          loc = strstr(RXbuffer, "PWMMIN ");
-          if (loc != NULL) {
-              oper = loc + 7;
-              uint16_t minpwm;
-              minpwm = atoi(oper);
-              snprintf(TXbuffer, 1024, "Setting PWM Minimum to: %d\r\n", minpwm);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              Config.PWM_MIN = minpwm;
-              if (TIM1->CCR1 > minpwm){
-                  Set_PWM(minpwm);
-              }
-              return;
-          }
-          loc = strstr(RXbuffer, "PWMMAX ");
-          if (loc != NULL) {
-              oper = loc + 7;
-              uint16_t maxpwm;
-              maxpwm = atoi(oper);
-              snprintf(TXbuffer, 1024, "Setting PWM Maximum to: %d\r\n", maxpwm);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              Config.PWM_MAX = maxpwm;
-              if (TIM1->CCR1 > maxpwm){
-                  Set_PWM(maxpwm);
-              }
-              return;
-          }
-          loc = strstr(RXbuffer, "TARE");
-          if (loc != NULL) {
-              snprintf(TXbuffer, 1024, "Tare both channels\r\n");
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              tare_all(&loadcell1, 10);
-              return;
-          }
-          loc = strstr(RXbuffer, "CHANNEL ");
-          if (loc != NULL) {
-              oper = loc + 8;
-              bool ch = atoi(oper);
-              snprintf(TXbuffer, 1024, "Switched to CH%s\r\n", ch ? "B": "A");
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              Config.HX_CH = ch;
-              return;
-          }
-          loc = strstr(RXbuffer, "CHGAIN ");
-          if (loc != NULL) {
-              oper = loc + 7;
-              bool gain = atoi(oper);
-              snprintf(TXbuffer, 1024, "CHA gain set to %s\r\n", gain ? "low": "high");
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              if (gain){
-                  set_gain(&loadcell1, 128, 32);
-              }
-              else{
-                  set_gain(&loadcell1, 64, 32);
-              }
-              return;
-          }
-          loc = strstr(RXbuffer, "SCALE ");
-          if (loc != NULL) {
-              oper = loc + 6;
-              float32_t scale = atof(oper);
-              snprintf(TXbuffer, 1024, "CH%s scale set to %.4f\r\n", Config.HX_CH ? "B": "A", scale);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              set_scale(&loadcell1, Config.HX_CH, scale);
-              return;
-          }
-          loc = strstr(RXbuffer, "MEASURE");
-          if (loc != NULL) {
-              float32_t meas;
-              meas = get_weight(&loadcell1, 10, Config.HX_CH);
-              snprintf(TXbuffer, 1024, "Measured: %.4f\r\n", meas);
-              CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-              memset(RXbuffer, 0x00, 1024);
-              return;
-          }
-      }
-
-  }
   /* USER CODE END OTG_FS_IRQn 1 */
 }
 

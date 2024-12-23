@@ -42,9 +42,14 @@ typedef struct {
     uint16_t PWM_MIN;
     uint16_t PWM_MAX;
     bool HX_CH;
-    float32_t Kp;
-    float32_t Ki;
 } conf;
+
+typedef struct {
+    float32_t height;
+    float32_t error;
+    float32_t setpoint;
+    float32_t pv;
+} process;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -60,7 +65,9 @@ extern char TXbuffer[1024];
 extern conf Config;
 extern bool DebugMode;
 
-extern hx711_t loadcell1;
+extern process PVs;
+
+extern arm_pid_instance_f32 PID;
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
@@ -74,6 +81,8 @@ void Set_PWM_percent(float32_t percent);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_Pin GPIO_PIN_13
+#define LED_GPIO_Port GPIOC
 #define HX_Data_Pin GPIO_PIN_6
 #define HX_Data_GPIO_Port GPIOA
 #define HX_Clk_Pin GPIO_PIN_7

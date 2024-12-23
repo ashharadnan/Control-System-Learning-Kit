@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-#include "stm32f4xx_hal.h"
+#include "main.h"
 
 #define CHANNEL_A 0
 #define CHANNEL_B 1
