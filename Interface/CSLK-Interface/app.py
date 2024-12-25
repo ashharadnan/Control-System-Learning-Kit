@@ -189,7 +189,8 @@ def sp_box2slider(val):
 
 def sp_slider2box():
     val = myApp.SliderSP.value()
-    myApp.boxSP.setValue(val)
+    if round(myApp.boxSP.value()) != val:
+        myApp.boxSP.setValue(val)
 
 
 def start_acquire():
@@ -343,7 +344,7 @@ if __name__ == "__main__":
     myApp.BtnPWM.clicked.connect(set_pwm)
     myApp.BtnSP.clicked.connect(set_sp)
     myApp.boxSP.valueChanged.connect(sp_box2slider)
-    myApp.SliderSP.sliderMoved.connect(sp_slider2box)
+    myApp.SliderSP.valueChanged.connect(sp_slider2box)
 
     myApp.BtnStart.clicked.connect(start_acquire)
     myApp.actionStart.triggered.connect(start_acquire)
