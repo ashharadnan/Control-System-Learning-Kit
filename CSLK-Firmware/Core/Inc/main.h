@@ -45,10 +45,12 @@ typedef struct {
 } conf;
 
 typedef struct {
+    uint8_t delimiter;
     float32_t height;
     float32_t error;
     float32_t setpoint;
     float32_t pv;
+    uint8_t end;
 } process;
 /* USER CODE END ET */
 

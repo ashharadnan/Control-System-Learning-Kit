@@ -112,7 +112,7 @@ int main(void)
   //Loadcell initialisation
     hx711_init(&loadcell1, HX_Clk_GPIO_Port, HX_Clk_Pin, HX_Data_GPIO_Port, HX_Data_Pin);
     set_gain(&loadcell1, 128, 32);
-    set_scales(&loadcell1, 1, 1);
+    set_scales(&loadcell1, 26780, 1);
     tare_all(&loadcell1, 10);
 
     HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);
@@ -122,6 +122,9 @@ int main(void)
     PID.Ki = 0;
     PID.Kd = 0;
     arm_pid_init_f32(&PID, 1);
+
+    PVs.delimiter = '?';
+    PVs.end = '\n';
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     HAL_TIM_Base_Start_IT(&htim3);
@@ -293,14 +296,20 @@ int main(void)
                   CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
                   memset(RXbuffer, 0x00, 1024);
               }
+              loc = strstr(RXbuffer, "KD ");
+              if (loc != NULL) {
+                  oper = loc + 3;
+                  PID.Kd = atof(oper);
+                  arm_pid_init_f32(&PID, 1);
+                  snprintf(TXbuffer, 1024, "Kd changed to: %.4f\r\n", PID.Kd);
+                  CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+                  memset(RXbuffer, 0x00, 1024);
+              }
           }
 
       }
 
-      if (!DebugMode){
-          PVs.height = get_weight(&loadcell1, 10, Config.HX_CH);
-      }
-
+      PVs.height = get_weight(&loadcell1, 5, Config.HX_CH);
       HAL_Delay(0);
     /* USER CODE END WHILE */
 
@@ -450,7 +459,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 1000;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 24999;
+  htim3.Init.Period = 4999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -583,9 +592,11 @@ void Set_PWM(uint16_t pwm){
     else{
         TIM1->CCR1 = pwm;
     }
+
 }
 
 void Set_PWM_percent(float32_t percent){
+    PVs.pv = percent;
     percent = (float32_t)Config.PWM_MIN + (float32_t)(Config.PWM_MAX - Config.PWM_MIN) * (percent / 100.0);
     Set_PWM((uint16_t) percent);
 }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="CSLK-Firmware" targetName="CSLK-Firmware.elf" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2771f914-01ea-4594-9b86-6a6b835c788e" name="Changes" comment="Changed process freqeuncy to 500Hz">
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/CSLK-Interface.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/dialog.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/layout.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSLK-Firmware.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/CSLK-Firmware.ioc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core/Inc/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Inc/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core/Src/stm32f4xx_it.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/stm32f4xx_it.c" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2024" />
+    <option name="minorVersion" value="1.1" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2qW1R9ZCyDc0lbdTpjRvmTZvU6N" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Study/EE407/TermProject/Control-System-Learning-Kit/CSLK-Firmware/CMakeLists.txt&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.cidr.embedded.config&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Study\EE407\TermProject\Control-System-Learning-Kit\CSLK-Firmware\Core\Src" />
+      <recent name="D:\Study\EE407\TermProject\Control-System-Learning-Kit\CSLK-Firmware\Core\Inc" />
+    </key>
+  </component>
+  <component name="RunManager" selected="OpenOCD Download &amp; Run.OCD CSLK-Firmware">
+    <configuration name="CSLK-Firmware.elf" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="CSLK-Firmware" TARGET_NAME="CSLK-Firmware.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="CSLK-Firmware" RUN_TARGET_NAME="CSLK-Firmware.elf">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.CSLK-Firmware.elf" />
+      <item itemvalue="OpenOCD Download &amp; Run.OCD CSLK-Firmware" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2771f914-01ea-4594-9b86-6a6b835c788e" name="Changes" comment="" />
+      <created>1734763506892</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734763506892</updated>
+      <workItem from="1734763507917" duration="392000" />
+      <workItem from="1734809310434" duration="763000" />
+      <workItem from="1734836240057" duration="9054000" />
+      <workItem from="1734927621858" duration="373000" />
+      <workItem from="1735069259018" duration="5246000" />
+      <workItem from="1735079520037" duration="171000" />
+      <workItem from="1735082087836" duration="162000" />
+    </task>
+    <task id="LOCAL-00001" summary="Debug mode available. Implemented loadcell driver and PWM generation">
+      <option name="closed" value="true" />
+      <created>1734763804927</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1734763804927</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Debug mode available. Implemented loadcell driver and PWM generation">
+      <option name="closed" value="true" />
+      <created>1734763889970</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1734763889970</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Changed process freqeuncy to 500Hz">
+      <option name="closed" value="true" />
+      <created>1734927974854</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1734927974854</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Debug mode available. Implemented loadcell driver and PWM generation" />
+    <MESSAGE value="Changed process freqeuncy to 500Hz" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed process freqeuncy to 500Hz" />
+  </component>
+</project>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/build/app/localpycs" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/PySide6/plugins/generic" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/PySide6/plugins/iconengines" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/PySide6/translations" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/http1.0" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/America/Argentina" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/America/Indiana" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/America/Kentucky" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/America/North_Dakota" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/Arctic" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/Brazil" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/Chile" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/_tcl_data/tzdata/Mexico" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/matplotlib/backends" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/numpy/fft" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/numpy/linalg" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/pandas.libs" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/pandas/_libs/window" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/pytz/zoneinfo/America/Kentucky" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/pytz/zoneinfo/Arctic" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy.libs" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/_lib/_uarray" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/optimize/_lsq" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/sparse/linalg/_eigen" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/sparse/linalg/_propack" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/stats/_levy_stable" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/scipy/stats/_rcont" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/setuptools/_vendor/wheel-0.43.0.dist-info" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/tcl8/8.4/platform" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/tcl8/8.5" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/app/_internal/tcl8/8.6" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

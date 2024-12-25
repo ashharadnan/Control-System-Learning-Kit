@@ -210,10 +210,7 @@ void SysTick_Handler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
-  if (!DebugMode){
-      snprintf(TXbuffer, 1024, "Height: %.4f\tPWM: %.2f\tSetpoint: %.4f\tError: %.4f\r\n", PVs.height, PVs.pv, PVs.setpoint, PVs.error);
-      CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
-  }
+  CDC_Transmit_FS(&PVs, 24);
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
@@ -227,13 +224,13 @@ void TIM3_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-  if(!DebugMode){
-      PVs.error = PVs.setpoint - PVs.height;
+  PVs.error = PVs.setpoint - PVs.height;
+    if(!DebugMode){
       PVs.pv = arm_pid_f32(&PID, PVs.error);
       if (PVs.pv > 100) PVs.pv = 100;
       else if (PVs.pv < 0) PVs.pv = 0;
       Set_PWM_percent(PVs.pv);
-  }
+    }
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
