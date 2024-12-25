@@ -451,6 +451,9 @@
                <property name="singleStep">
                 <number>1</number>
                </property>
+               <property name="tracking">
+                <bool>true</bool>
+               </property>
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -730,7 +733,7 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Aqcuisition</string>
+              <string>Acquisition</string>
              </property>
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="0">
@@ -805,7 +808,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>400</height>
+               <height>200</height>
               </size>
              </property>
              <property name="frameShape">
@@ -822,6 +825,22 @@
        </layout>
       </item>
      </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_8">
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+        <italic>true</italic>
+       </font>
+      </property>
+      <property name="text">
+       <string>Ashhar Adnan - 2024</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -843,7 +862,7 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Aqcuisition</string>
+     <string>Acquisition</string>
     </property>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>

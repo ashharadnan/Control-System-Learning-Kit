@@ -343,7 +343,7 @@ if __name__ == "__main__":
     myApp.BtnPWM.clicked.connect(set_pwm)
     myApp.BtnSP.clicked.connect(set_sp)
     myApp.boxSP.valueChanged.connect(sp_box2slider)
-    myApp.SliderSP.valueChanged.connect(sp_slider2box)
+    myApp.SliderSP.sliderMoved.connect(sp_slider2box)
 
     myApp.BtnStart.clicked.connect(start_acquire)
     myApp.actionStart.triggered.connect(start_acquire)
