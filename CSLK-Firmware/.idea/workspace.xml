@@ -21,19 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2771f914-01ea-4594-9b86-6a6b835c788e" name="Changes" comment="Changed process freqeuncy to 500Hz">
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/CSLK-Interface.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/dialog.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Interface/CSLK-Interface/layout.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CSLK-Firmware.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/CSLK-Firmware.ioc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/Inc/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Inc/main.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core/Src/stm32f4xx_it.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/stm32f4xx_it.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,6 +99,7 @@
       <workItem from="1735069259018" duration="5246000" />
       <workItem from="1735079520037" duration="171000" />
       <workItem from="1735082087836" duration="162000" />
+      <workItem from="1735165117258" duration="16000" />
     </task>
     <task id="LOCAL-00001" summary="Debug mode available. Implemented loadcell driver and PWM generation">
       <option name="closed" value="true" />
