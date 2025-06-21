@@ -89,6 +89,8 @@ void Set_PWM_percent(float32_t percent);
 #define HX_Data_GPIO_Port GPIOA
 #define HX_Clk_Pin GPIO_PIN_7
 #define HX_Clk_GPIO_Port GPIOA
+#define DEBUG_Pin GPIO_PIN_12
+#define DEBUG_GPIO_Port GPIOB
 #define IN1_Pin GPIO_PIN_8
 #define IN1_GPIO_Port GPIOA
 #define IN2_Pin GPIO_PIN_9
@@ -97,7 +99,7 @@ void Set_PWM_percent(float32_t percent);
 #define ENA_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+#define Ts 0.0005
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -1,6 +1,10 @@
 import sys
 import random
 
+from pathlib import Path
+PROJECT_DIR = Path(__file__).parent
+
+
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QWidget, QDialog, QTableWidgetItem, QVBoxLayout
 from PySide6.QtGui import QIcon
@@ -223,9 +227,9 @@ def data_aqcuire():
     global current, Tstart, series
     global canvas
 
-    ser.reset_input_buffer()
     while (pollFlag):
         msg = []
+        ser.reset_input_buffer()
         while (len(msg) != 24):
             msg = ser.readline()
         st = struct.unpack('<xxxcxxxffffc', msg)
@@ -275,6 +279,7 @@ def data_aqcuire():
                 canvas.flush_events()
 
 
+
 def save_csv():
     global dframe
     if dframe is not None:
@@ -299,7 +304,7 @@ if __name__ == "__main__":
     app.setApplicationDisplayName('Control System Learning Kit')
 
     ui_file_name = "layout.ui"
-    ui_file = QFile(ui_file_name)
+    ui_file = QFile(PROJECT_DIR/ui_file_name)
     if not ui_file.open(QIODevice.ReadOnly):
         print(f"Cannot open {ui_file_name}: {ui_file.errorString()}")
         sys.exit(-1)

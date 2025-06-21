@@ -210,11 +210,10 @@ void SysTick_Handler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
-  CDC_Transmit_FS(&PVs, 24);
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
-
+  CDC_Transmit_FS(&PVs, 24);
   /* USER CODE END TIM3_IRQn 1 */
 }
 
@@ -224,17 +223,18 @@ void TIM3_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-  PVs.error = PVs.setpoint - PVs.height;
-    if(!DebugMode){
-      PVs.pv = arm_pid_f32(&PID, PVs.error);
-      if (PVs.pv > 100) PVs.pv = 100;
-      else if (PVs.pv < 0) PVs.pv = 0;
-      Set_PWM_percent(PVs.pv);
-    }
+	HAL_GPIO_WritePin(DEBUG_GPIO_Port, DEBUG_Pin, GPIO_PIN_SET);
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-
+  PVs.error = PVs.setpoint - PVs.height;
+    if(!DebugMode){
+      PVs.pv = arm_pid_f32(&PID, PVs.error);
+//      if (PVs.pv > 100) PVs.pv = 100;
+//      else if (PVs.pv < 0) PVs.pv = 0;
+      Set_PWM_percent(PVs.pv);
+    }
+    HAL_GPIO_WritePin(DEBUG_GPIO_Port, DEBUG_Pin, GPIO_PIN_RESET);
   /* USER CODE END TIM4_IRQn 1 */
 }
 

@@ -270,11 +270,15 @@ extern "C"
   arm_pid_instance_f32 * S,
   float32_t in)
   {
-    float32_t out;
+    float32_t out, delta;
 
     /* y[n] = y[n-1] + A0 * x[n] + A1 * x[n-1] + A2 * x[n-2]  */
-    out = (S->A0 * in) +
-      (S->A1 * S->state[0]) + (S->A2 * S->state[1]) + (S->state[2]);
+    delta = (S->A0 * in) +
+      (S->A1 * S->state[0]) + (S->A2 * S->state[1]);
+
+	out = delta + (S->state[2]);
+
+    if(out>100 || out <0) out = (S->state[2]);
 
     /* Update state */
     S->state[1] = S->state[0];
