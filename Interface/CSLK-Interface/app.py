@@ -247,6 +247,7 @@ def data_aqcuire():
             if Tstart is None:
                 Tstart = time.time()
             t = round(time.time() - Tstart, 1)
+            """
             row = myApp.tableData.rowCount()
             myApp.tableData.setRowCount(row + 1)
             myApp.tableData.setCurrentCell(row, 2)
@@ -255,6 +256,7 @@ def data_aqcuire():
             myApp.tableData.setItem(row, 2, QTableWidgetItem(str(round(current["error"], 2))))
             myApp.tableData.setItem(row, 3, QTableWidgetItem(str(round(current["setpoint"], 2))))
             myApp.tableData.setItem(row, 4, QTableWidgetItem(str(round(current["pwm"], 2))))
+            """
 
             if series is None:
                 series = np.array([t, current["height"], current["error"], current["setpoint"], current["pwm"]])

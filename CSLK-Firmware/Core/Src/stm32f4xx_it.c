@@ -230,8 +230,8 @@ void TIM4_IRQHandler(void)
   PVs.error = PVs.setpoint - PVs.height;
     if(!DebugMode){
       PVs.pv = arm_pid_f32(&PID, PVs.error);
-//      if (PVs.pv > 100) PVs.pv = 100;
-//      else if (PVs.pv < 0) PVs.pv = 0;
+      if (PVs.pv > 100) PVs.pv = 100;
+      else if (PVs.pv < 0) PVs.pv = 0;
       Set_PWM_percent(PVs.pv);
     }
     HAL_GPIO_WritePin(DEBUG_GPIO_Port, DEBUG_Pin, GPIO_PIN_RESET);
