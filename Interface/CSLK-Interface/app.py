@@ -134,7 +134,7 @@ def debug_on():
     myApp.BtnDebugOff.setEnabled(True)
     myApp.groupBox_2.setEnabled(True)
     myApp.groupBox_3.setEnabled(True)
-
+    myApp.groupBox_9.setEnabled(True)
 
 def debug_off():
     global ser
@@ -144,6 +144,7 @@ def debug_off():
     myApp.BtnDebugOff.setEnabled(False)
     myApp.groupBox_2.setEnabled(False)
     myApp.groupBox_3.setEnabled(False)
+    myApp.groupBox_9.setEnabled(False)
 
 
 def set_kp():
@@ -165,6 +166,18 @@ def set_kd():
     val = myApp.boxKd.value()
     ser.reset_input_buffer()
     ser.write(bytes("KD {0}\r\n".format(val), "utf-8"))
+
+    
+def enable_antiwindup():
+    global ser
+    ser.reset_input_buffer()
+    ser.write(bytes("WIND 1\r\n", "utf-8"))
+
+
+def disable_antiwindup():
+    global ser
+    ser.reset_input_buffer()
+    ser.write(bytes("WIND 0\r\n", "utf-8"))
 
 
 def tare():
@@ -214,6 +227,17 @@ def start_acquire():
 def stop_acquire():
     global acquireFlag, series, dframe
     acquireFlag = False
+    
+    for current in series:
+        row = myApp.tableData.rowCount()
+        myApp.tableData.setRowCount(row + 1)
+        myApp.tableData.setCurrentCell(row, 2)
+        myApp.tableData.setItem(row, 0, QTableWidgetItem(str(current[0])))
+        myApp.tableData.setItem(row, 1, QTableWidgetItem(str(round(current[1], 2))))
+        myApp.tableData.setItem(row, 2, QTableWidgetItem(str(round(current[2], 2))))
+        myApp.tableData.setItem(row, 3, QTableWidgetItem(str(round(current[3], 2))))
+        myApp.tableData.setItem(row, 4, QTableWidgetItem(str(round(current[4], 2))))
+
     dframe = pd.DataFrame(series, columns=["time", "height", "error", "setpoint", "pwm"])
     myApp.BtnStart.setEnabled(True)
     myApp.actionStart.setEnabled(True)
@@ -247,16 +271,6 @@ def data_aqcuire():
             if Tstart is None:
                 Tstart = time.time()
             t = round(time.time() - Tstart, 1)
-            """
-            row = myApp.tableData.rowCount()
-            myApp.tableData.setRowCount(row + 1)
-            myApp.tableData.setCurrentCell(row, 2)
-            myApp.tableData.setItem(row, 0, QTableWidgetItem(str(t)))
-            myApp.tableData.setItem(row, 1, QTableWidgetItem(str(round(current["height"], 2))))
-            myApp.tableData.setItem(row, 2, QTableWidgetItem(str(round(current["error"], 2))))
-            myApp.tableData.setItem(row, 3, QTableWidgetItem(str(round(current["setpoint"], 2))))
-            myApp.tableData.setItem(row, 4, QTableWidgetItem(str(round(current["pwm"], 2))))
-            """
 
             if series is None:
                 series = np.array([t, current["height"], current["error"], current["setpoint"], current["pwm"]])
@@ -347,6 +361,8 @@ if __name__ == "__main__":
     myApp.BtnKp.clicked.connect(set_kp)
     myApp.BtnKi.clicked.connect(set_ki)
     myApp.BtnKd.clicked.connect(set_kd)
+    myApp.radioWindOn.clicked.connect(enable_antiwindup)
+    myApp.radioWindOff.clicked.connect(disable_antiwindup)
     myApp.BtnTare.clicked.connect(tare)
     myApp.BtnPWM.clicked.connect(set_pwm)
     myApp.BtnSP.clicked.connect(set_sp)

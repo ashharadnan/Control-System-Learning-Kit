@@ -229,7 +229,7 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
   PVs.error = PVs.setpoint - PVs.height;
     if(!DebugMode){
-      PVs.pv = arm_pid_f32(&PID, PVs.error);
+      PVs.pv = arm_pid_f32(&PID, PVs.error, AntiWindup);
       if (PVs.pv > 100) PVs.pv = 100;
       else if (PVs.pv < 0) PVs.pv = 0;
       Set_PWM_percent(PVs.pv);

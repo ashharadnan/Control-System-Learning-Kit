@@ -32,6 +32,7 @@
 
 #include "dsp/none.h"
 #include "dsp/utils.h"
+#include <stdbool.h>
 
 #ifdef   __cplusplus
 extern "C"
@@ -268,7 +269,7 @@ extern "C"
    */
   __STATIC_FORCEINLINE float32_t arm_pid_f32(
   arm_pid_instance_f32 * S,
-  float32_t in)
+  float32_t in, bool wind)
   {
     float32_t out, delta;
 
@@ -278,7 +279,9 @@ extern "C"
 
 	out = delta + (S->state[2]);
 
-    if(out>100 || out <0) out = (S->state[2]);
+    //if(out>100 || out <0) out = (S->state[2]);
+	if(out>100 && wind) out = 100;
+	else if(out<0 && wind) out = 0;
 
     /* Update state */
     S->state[1] = S->state[0];

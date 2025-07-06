@@ -37,6 +37,7 @@ char TXbuffer[1024];
 
 conf Config = {1300, 4199, CHANNEL_A};
 bool DebugMode = true;
+bool AntiWindup = false;
 
 hx711_t loadcell1;
 
@@ -159,7 +160,9 @@ int main(void)
                       "MEASURE\t:\tGet the current value\r\n"
                       "\t\t--Control--\r\n"
                       "KP d.f\t\t:\tSet the Proportional Gain to d.f\r\n"
-                      "KI d.f\t\t:\tSet the Proportional Gain to d.f\r\n",
+                      "KI d.f\t\t:\tSet the Integral Gain to d.f\r\n"
+            		  "KD d.f\t\t:\tSet the Derivative Gain to d.f\r\n"
+            		  "WIND {0,1}\t:\tTurn AntiWindup on or off\r\n",
                       1024);
               CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
               memset(RXbuffer, 0x00, 1024);
@@ -305,6 +308,15 @@ int main(void)
                   CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
                   memset(RXbuffer, 0x00, 1024);
               }
+              loc = strstr(RXbuffer, "WIND ");
+				if (loc != NULL) {
+					oper = loc + 5;
+					AntiWindup = atoi(oper);
+					arm_pid_init_f32(&PID, 1);
+					snprintf(TXbuffer, 1024, "AntiWindup: %d\r\n", AntiWindup);
+					CDC_Transmit_FS(TXbuffer, strlen(TXbuffer));
+					memset(RXbuffer, 0x00, 1024);
+				}
           }
 
       }

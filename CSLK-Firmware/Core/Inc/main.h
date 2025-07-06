@@ -70,6 +70,7 @@ extern bool DebugMode;
 extern process PVs;
 
 extern arm_pid_instance_f32 PID;
+extern bool AntiWindup;
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
